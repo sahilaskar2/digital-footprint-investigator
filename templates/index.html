@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Digital Footprint Investigator</title>
+<title>Digital Footprint Investigation Tool</title>
 </head>
 
 <body>
@@ -15,12 +15,18 @@
 </form>
 
 {% if results %}
+
 <h2>Results</h2>
+
 <ul>
 {% for site, status in results.items() %}
 <li>{{site}} : {{status}}</li>
 {% endfor %}
 </ul>
+
+<h3>Digital Presence Score: {{score}}%</h3>
+<h3>Risk Level: {{risk}}</h3>
+
 {% endif %}
 
 </body>
