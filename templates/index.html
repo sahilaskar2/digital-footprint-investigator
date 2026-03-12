@@ -9,12 +9,19 @@
 <h1>Digital Footprint Investigation Tool</h1>
 
 <form method="POST">
-    <input type="text" placeholder="Enter Username">
-    <br><br>
-    <input type="email" placeholder="Enter Email">
+    <input type="text" name="username" placeholder="Enter Username" required>
     <br><br>
     <button type="submit">Investigate</button>
 </form>
+
+{% if results %}
+<h2>Results</h2>
+<ul>
+{% for site, status in results.items() %}
+<li>{{site}} : {{status}}</li>
+{% endfor %}
+</ul>
+{% endif %}
 
 </body>
 </html>
