@@ -1,7 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Digital Footprint Investigation Tool</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
 </head>
 
 <body>
@@ -9,23 +17,64 @@
 <h1>Digital Footprint Investigation Tool</h1>
 
 <form method="POST">
-    <input type="text" name="username" placeholder="Enter Username" required>
-    <br><br>
-    <button type="submit">Investigate</button>
+
+<input type="text"
+       name="username"
+       placeholder="Enter Username"
+       required>
+
+<button type="submit">Investigate</button>
+
 </form>
 
-{% if results %}
+{% if username %}
 
-<h2>Results</h2>
+<h2>Results for {{username}}</h2>
 
 <ul>
+
 {% for site, status in results.items() %}
-<li>{{site}} : {{status}}</li>
+
+<li>
+
+<strong>{{site}}</strong> :
+
+{% if status == "✓ Found" %}
+
+<span class="found">✓ Found</span>
+
+<a href="{{links[site]}}" target="_blank">
+Open Profile
+</a>
+
+{% else %}
+
+<span class="notfound">✗ Not Found</span>
+
+{% endif %}
+
+</li>
+
 {% endfor %}
+
 </ul>
 
-<h3>Digital Presence Score: {{score}}%</h3>
-<h3>Risk Level: {{risk}}</h3>
+
+<div class="score-box">
+
+<p>
+Digital Presence Score:
+<strong>{{score}}%</strong>
+</p>
+
+<p>
+Risk Level:
+<span class="{{risk|lower}}">
+{{risk}}
+</span>
+</p>
+
+</div>
 
 {% endif %}
 

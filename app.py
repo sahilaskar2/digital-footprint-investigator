@@ -5,13 +5,18 @@ from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
 
-# Social platforms
-SOCIAL_PLATFORMS = {
+PLATFORMS = {
     "GitHub": "https://github.com/{}",
     "Instagram": "https://www.instagram.com/{}/",
-    "Reddit": "https://www.reddit.com/user/{}",
+    "Reddit User": "https://www.reddit.com/user/{}",
+    "Reddit Subreddit": "https://www.reddit.com/r/{}",
     "Twitter": "https://twitter.com/{}",
-    "LinkedIn": "https://www.linkedin.com/in/{}"
+    "LinkedIn Profile": "https://www.linkedin.com/in/{}",
+    "LinkedIn Company": "https://www.linkedin.com/company/{}",
+    "Pinterest": "https://www.pinterest.com/{}/",
+    "Facebook": "https://www.facebook.com/{}",
+    "YouTube": "https://www.youtube.com/@{}",
+    "Telegram": "https://t.me/{}"
 }
 
 HEADERS = {
@@ -21,56 +26,80 @@ HEADERS = {
 
 def check_platform(platform, username):
 
-    url = SOCIAL_PLATFORMS[platform].format(username)
+    url = PLATFORMS[platform].format(username)
 
     try:
-        response = requests.get(
-            url,
-            headers=HEADERS,
-            timeout=6,
-            allow_redirects=True
-        )
 
-        final_url = response.url.lower()
-        content = response.text.lower()
+        r = requests.get(url, headers=HEADERS, timeout=6, allow_redirects=True)
+        text = r.text.lower()
+        final_url = r.url.lower()
 
-        # GitHub detection
+        # ---------- GitHub ----------
         if platform == "GitHub":
-            if response.status_code == 200 and username.lower() in final_url:
-                return (platform, True, url)
+            if r.status_code == 200 and "not found" not in text:
+                return platform, True, url
 
-        # Instagram detection
+        # ---------- Instagram ----------
         elif platform == "Instagram":
-            if response.status_code == 200 and "profilepage" in content:
-                return (platform, True, url)
+            if r.status_code == 200 and "profilepage" in text:
+                return platform, True, url
 
-        # Reddit detection
-        elif platform == "Reddit":
-            if "nobody on reddit goes by that name" not in content and response.status_code == 200:
-                if username.lower() in final_url:
-                    return (platform, True, url)
+        # ---------- Reddit user ----------
+        elif platform == "Reddit User":
+            if r.status_code == 200 and "nobody on reddit goes by that name" not in text:
+                return platform, True, url
 
-        # Twitter detection
+        # ---------- Reddit subreddit ----------
+        elif platform == "Reddit Subreddit":
+            if r.status_code == 200 and "community not found" not in text:
+                return platform, True, url
+
+        # ---------- Twitter ----------
         elif platform == "Twitter":
-            if response.status_code == 200 and username.lower() in final_url:
-                return (platform, True, url)
+            if r.status_code == 200 and "this account doesn’t exist" not in text:
+                return platform, True, url
 
-        # LinkedIn detection
-        elif platform == "LinkedIn":
-            if response.status_code == 200 and username.lower() in final_url:
-                if "page not found" not in content:
-                    return (platform, True, url)
+        # ---------- LinkedIn profile ----------
+        elif platform == "LinkedIn Profile":
+            if r.status_code == 200 and "profile not found" not in text:
+                return platform, True, url
+
+        # ---------- LinkedIn company ----------
+        elif platform == "LinkedIn Company":
+            if r.status_code == 200 and "page not found" not in text:
+                return platform, True, url
+
+        # ---------- Pinterest ----------
+        elif platform == "Pinterest":
+            if r.status_code == 200 and "profile" in final_url:
+                return platform, True, url
+
+        # ---------- Facebook ----------
+        elif platform == "Facebook":
+            if r.status_code == 200 and "content not found" not in text:
+                return platform, True, url
+
+        # ---------- YouTube ----------
+        elif platform == "YouTube":
+            if r.status_code == 200 and ("subscribers" in text or "videos" in text):
+                return platform, True, url
+
+        # ---------- Telegram ----------
+        elif platform == "Telegram":
+            if r.status_code == 200 and ("send message" in text or username.lower() in text):
+                return platform, True, url
 
     except:
         pass
 
-    return (platform, False, None)
+    return platform, False, None
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
 
     results = {}
+    links = {}
     score = 0
     risk = "Low"
     username = ""
@@ -78,26 +107,26 @@ def index():
     if request.method == "POST":
 
         username = request.form["username"]
-
-        # clean username
         username = re.sub(r"[^a-zA-Z0-9_]", "", username)
 
-        with ThreadPoolExecutor(max_workers=5) as executor:
+        with ThreadPoolExecutor(max_workers=10) as executor:
+
             futures = [
                 executor.submit(check_platform, platform, username)
-                for platform in SOCIAL_PLATFORMS
+                for platform in PLATFORMS
             ]
 
             for future in futures:
+
                 platform, found, link = future.result()
 
                 if found:
                     results[platform] = "✓ Found"
-                    score += 20
+                    links[platform] = link
+                    score += 9
                 else:
                     results[platform] = "✗ Not Found"
 
-        # Risk calculation
         if score >= 60:
             risk = "High"
         elif score >= 30:
@@ -107,10 +136,11 @@ def index():
 
     return render_template(
         "index.html",
+        username=username,
         results=results,
+        links=links,
         score=score,
-        risk=risk,
-        username=username
+        risk=risk
     )
 
 

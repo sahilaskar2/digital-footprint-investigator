@@ -1,0 +1,182 @@
+/* ---------------- GLOBAL SETTINGS ---------------- */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family: "Segoe UI", sans-serif;
+    background:#0f172a;
+    color:#e2e8f0;
+    min-height:100vh;
+    padding:40px;
+}
+
+/* ---------------- TITLE ---------------- */
+
+h1{
+    text-align:center;
+    font-size:40px;
+    margin-bottom:40px;
+    color:#38bdf8;
+    letter-spacing:2px;
+}
+
+/* ---------------- SEARCH FORM ---------------- */
+
+form{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:40px;
+}
+
+input{
+    padding:12px 16px;
+    width:250px;
+    border-radius:8px;
+    border:none;
+    font-size:16px;
+}
+
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:8px;
+    background:#38bdf8;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#0ea5e9;
+}
+
+/* ---------------- RESULTS TITLE ---------------- */
+
+h2{
+    margin-bottom:20px;
+    text-align:center;
+}
+
+/* ---------------- RESULT GRID ---------------- */
+
+ul{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+    list-style:none;
+}
+
+/* ---------------- PLATFORM CARD ---------------- */
+
+li{
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.5);
+    transition:0.3s;
+}
+
+li:hover{
+    transform:translateY(-5px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.7);
+}
+
+/* ---------------- FOUND STATUS ---------------- */
+
+li:has(span.found){
+    border-left:6px solid #22c55e;
+}
+
+/* ---------------- NOT FOUND STATUS ---------------- */
+
+li:has(span.notfound){
+    border-left:6px solid #ef4444;
+}
+
+/* ---------------- STATUS TEXT ---------------- */
+
+.found{
+    color:#22c55e;
+    font-weight:bold;
+}
+
+.notfound{
+    color:#ef4444;
+    font-weight:bold;
+}
+
+/* ---------------- PROFILE LINK ---------------- */
+
+a{
+    display:inline-block;
+    margin-top:10px;
+    color:#38bdf8;
+    text-decoration:none;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+/* ---------------- SCORE BOX ---------------- */
+
+.score-box{
+    margin-top:40px;
+    padding:20px;
+    background:#1e293b;
+    border-radius:10px;
+    text-align:center;
+    font-size:20px;
+}
+
+/* ---------------- RISK LEVEL COLORS ---------------- */
+
+.high{
+    color:#ef4444;
+    font-weight:bold;
+}
+
+.medium{
+    color:#f59e0b;
+    font-weight:bold;
+}
+
+.low{
+    color:#22c55e;
+    font-weight:bold;
+}
+
+/* ---------------- ANIMATED BACKGROUND ---------------- */
+
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:radial-gradient(circle at 20% 20%,#1e3a8a,transparent),
+               radial-gradient(circle at 80% 80%,#0ea5e9,transparent);
+    opacity:0.2;
+    z-index:-1;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+@media(max-width:600px){
+
+    body{
+        padding:20px;
+    }
+
+    h1{
+        font-size:28px;
+    }
+
+}
